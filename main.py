@@ -22,7 +22,7 @@ UPLOADED_FILES_LOG = os.path.join(VECTOR_DB_PATH, "files.txt")
 
 
 class ChatPDF:
-    def __init__(self, chunk_size: int = 2000, chunk_overlap: int = 200):
+    def __init__(self, chunk_size: int = 750, chunk_overlap: int = 100):
         # Model and embeddings
         self.model = ChatOllama(model="deepseek-r1:1.5b")
         self.embedding = OllamaEmbeddings(model="nomic-embed-text")
@@ -38,13 +38,13 @@ class ChatPDF:
 <s>[INST] You are an expert assistant specialized in structural and geotechnical tunnel engineering. 
 Use ONLY the information retrieved from the provided documents (PDFs, JSONs) to answer. 
 Do NOT invent tests, simulations, or geological information that is not in the documents. 
-Do not use lists or line breaks. Provide a single, concise paragraph (max 3 sentences). 
+Do not use lists or line breaks. Provide a detailed and complete answer based on the provided documents.
 If the answer is not in the context, say: "The answer is not in the provided documents."
 
 Question: {question}
 Context: {context}
 
-Answer: [/INST]</s>
+[/INST]</s>
 """)
         
         # Vector store
@@ -75,7 +75,7 @@ Answer: [/INST]</s>
             )
             self.retriever = self.vector_store.as_retriever(
                 search_type="similarity_score_threshold",
-                search_kwargs={"k": 5, "score_threshold": 0.3}
+                search_kwargs={"k": 8, "score_threshold": 0.3}
             )
             self.chain = (
                 {"context": self.retriever, "question": RunnablePassthrough()}
@@ -190,23 +190,16 @@ Answer: [/INST]</s>
         # Get model response
         response = self.chain.invoke(query)
 
-        # --- Post-process ---
+        # --- Post-process (Cleaning Only) ---
         import re
 
         # Remove line breaks and multiple spaces
+        # NOTE: Keep the .strip() to clean up leading/trailing whitespace
         response = re.sub(r'\s+', ' ', response.strip())
 
-        # Remove bullet-like characters
+        # Remove bullet-like characters (if the model ignores the "no lists" rule)
         response = re.sub(r'[-•–]', '', response)
 
-        # Split into sentences
-        sentences = re.split(r'(?<=[.!?])\s+', response)
+        # Since we trust the LLM's full answer now, we return the cleaned response.
+        return response.strip()
 
-        # Keep first 3 sentences
-        trimmed = " ".join(sentences[:3]).strip()
-
-        # Ensure proper ending
-        if not trimmed.endswith(('.', '!', '?')):
-            trimmed += "."
-
-        return trimmed
