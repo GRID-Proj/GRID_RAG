@@ -84,9 +84,9 @@ langchain
 langchain-community
 langchain-ollama
 langchain-chroma
-chromadb>=0.4.14
+chromadb
 pypdf
-fastembed
+jq
 ```
 
 Then install:
@@ -102,9 +102,10 @@ pip install -r requirements.txt
 1. Download and install from [ollama.com/download](https://ollama.com/download)  
 2. Then run:
    ```bash
-   ollama run mistral
+   ollama run deepseek-r1:1.5b
+   ollama run nomic-embed-text
    ```
-   This will download (~4.1 GB) and start the Mistral model locally.
+   This will download (~1.4 GB) and start the Mistral model locally.
 
 ---
 

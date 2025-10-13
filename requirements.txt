@@ -4,8 +4,6 @@ langchain
 langchain-community
 langchain-ollama
 langchain-chroma
-chromadb>=0.4.14
+chromadb
 pypdf
-fastembed
 jq
-langdetect>=1.0.9

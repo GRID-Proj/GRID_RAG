@@ -5,7 +5,7 @@ import streamlit as st
 from streamlit_chat import message
 from main import ChatPDF
 
-st.set_page_config(page_title="ChatPDF v2.1")
+st.set_page_config(page_title="ChatPDF ETS")
 
 # Initialize session state
 if "assistant" not in st.session_state:
@@ -13,7 +13,7 @@ if "assistant" not in st.session_state:
     st.session_state.messages = []
     st.session_state.uploaded_filenames = set()
 
-st.title("ChatPDF v2.1")
+st.title("ChatPDF ETS")
 
 # Upload PDFs and JSONs (only new ones)
 uploaded_files = st.file_uploader("Upload PDFs or JSONs", type=["pdf", "json"], accept_multiple_files=True)
