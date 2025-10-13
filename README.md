@@ -84,9 +84,9 @@ langchain
 langchain-community
 langchain-ollama
 langchain-chroma
-chromadb>=0.4.14
+chromadb
 pypdf
-fastembed
+jq
 ```
 
 Then install:
@@ -102,9 +102,10 @@ pip install -r requirements.txt
 1. Download and install from [ollama.com/download](https://ollama.com/download)  
 2. Then run:
    ```bash
-   ollama run mistral
+   ollama run deepseek-r1:1.5b
+   ollama run nomic-embed-text
    ```
-   This will download (~4.1 GB) and start the Mistral model locally.
+   This will download (~1.4 GB) and start the Mistral model locally.
 
 ---
 
@@ -138,6 +139,14 @@ Your browser will open automatically or show a local link (e.g., http://localhos
 3. View document-aware answers in the chat  
 4. Use **🗑️ Delete All Data** to reset and clear vector memory
 
+---
+## 🔄 What's New in v2.1.0
+
+- ✅ **General JSON Support**: Ingest both `defectList[]` (e.g., MRT damage logs) and `category[].elements[]` (e.g., masonry catalog).
+- ✅ **Prompt Improvements**: Short, clear, paragraph-only answers. Avoids repetition, bullets, and numbering.
+- ✅ **Flexible Retrieval**: Loosened similarity threshold for better JSON matching.
+- ✅ **Cleaner UI Flow**: Auto-detection of PDF vs. JSON during upload; graceful error handling.
+- ✅ **Automatic Truncation**: Ensures concise 3-sentence answers even if the model overruns.
 ---
 
 ## 📄 License

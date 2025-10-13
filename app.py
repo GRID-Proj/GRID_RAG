@@ -1,10 +1,11 @@
+# app.py
 import os
 import tempfile
 import streamlit as st
 from streamlit_chat import message
 from main import ChatPDF
 
-st.set_page_config(page_title="ChatPDF v2")
+st.set_page_config(page_title="ChatPDF ETS")
 
 # Initialize session state
 if "assistant" not in st.session_state:
@@ -12,22 +13,32 @@ if "assistant" not in st.session_state:
     st.session_state.messages = []
     st.session_state.uploaded_filenames = set()
 
-st.title("ChatPDF v2")
+st.title("ChatPDF ETS")
 
-# Upload PDFs (only new ones)
-uploaded_files = st.file_uploader("Upload PDFs", type="pdf", accept_multiple_files=True)
+# Upload PDFs and JSONs (only new ones)
+uploaded_files = st.file_uploader("Upload PDFs or JSONs", type=["pdf", "json"], accept_multiple_files=True)
 
 if uploaded_files:
     new_files = [f for f in uploaded_files if f.name not in st.session_state.uploaded_filenames]
 
     if new_files:
         for file in new_files:
-            with tempfile.NamedTemporaryFile(delete=False) as tf:
+            suffix = os.path.splitext(file.name)[-1]  # preserve extension for temp file
+            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tf:
                 tf.write(file.getbuffer())
                 file_path = tf.name
-            st.session_state.assistant.ingest(file_path)
-            st.session_state.uploaded_filenames.add(file.name)
-            os.remove(file_path)
+            try:
+                if file.name.endswith(".pdf"):
+                    st.session_state.assistant.ingest(file_path)
+                elif file.name.endswith(".json"):
+                    st.session_state.assistant.ingest_json(file_path)
+                else:
+                    raise ValueError("Unsupported file type.")
+                st.session_state.uploaded_filenames.add(file.name)
+            except Exception as e:
+                st.error(f"Failed to ingest {file.name}: {e}")
+            finally:
+                os.remove(file_path)
 
 # Show uploaded files from this session
 if st.session_state.uploaded_filenames:
